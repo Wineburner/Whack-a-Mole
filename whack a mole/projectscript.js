@@ -1,7 +1,8 @@
-//Set up for the game.
-let GameOver = 0;
+/* Set up for the game. */
+
+let gameOver = 0;
 let delay = 1000;
-var spots = [
+let spots = [
   [0, 0, 0],
   [0, 0, 0],
   [0, 0, 0],
@@ -13,15 +14,16 @@ document.getElementById("score").innerHTML = "Score: " + currentScore;
 
 let curve = 1.0;
 
-var bonkSFX = new Audio('sfx/bonk.wav');
-var gameOverSFX = new Audio('sfx/lose.wav');
+let bonkSFX = new Audio('sfx/bonk.wav');
+let gameOverSFX = new Audio('sfx/lose.wav');
 
-var levelTimer = setInterval(LevelUp, delay);
+let levelTimer = setInterval(LevelUp, delay);
 
-//this progresses one of the moles to the next level
+/* This progresses one of the moles to the next level */
+
 function LevelUp()
 {
-  var pick = Math.floor(Math.random() * 9) + 1;
+  let pick = Math.floor(Math.random() * 9) + 1;
 
   switch(pick)
   {
@@ -39,10 +41,14 @@ function LevelUp()
   ChangeSlide()
 }
 
-//This is what runs when you whack em, this will make sure that the same mole whacked doesn't pop up at the same time.
+/** 
+ * This also progresses the moles, but it will not 
+ * progress the mole the player clicked on.
+ */
+
 function LevelUpEx(num)
 {
-  var pick = num;
+  let pick = num;
   do
   {
     pick = Math.floor(Math.random() * 9) + 1;
@@ -66,13 +72,14 @@ function LevelUpEx(num)
   ChangeSlide()
 }
 
-//This function changes the img displayed on the screen.
+/* This function changes the img displayed on the screen. */
+
 function ChangeSlide()
 {
   let myId = "";
 
-  for (var i = 0; i < 3; i++) {
-    for (var j = 0; j < 3; j++) { 
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) { 
       myId = GetId(i, j);
 
       if (spots[i][j] >= 5)
@@ -114,7 +121,8 @@ function ChangeSlide()
   
 }
 
-//This converts the i and j to ID numbers based on the HTML.
+/* This function converts the i and j to an ID used by the HTML. */
+
 function GetId(i, j)
 {
   if (i == 0 && j == 0)
@@ -157,10 +165,11 @@ function GetId(i, j)
   }
 }
 
-//This is the click event, this runs everytime you whack a mole.
+/* This is the click event, this runs everytime you click a mole. */
+
 function Whack(i, j, myId)
 {
-  if (GameOver == 0 && spots[i][j] > 0)
+  if (gameOver == 0 && spots[i][j] > 0)
   {
 
 
@@ -172,18 +181,27 @@ function Whack(i, j, myId)
     clearInterval(levelTimer);
     document.getElementById(myId).src = "img/moleLevel0.png";
 
-    var spaceNumber = GetSpaceNumber(i, j)
+    let spaceNumber = GetSpaceNumber(i, j)
     
-    //The following two lines make it so there is a chance another mole will levelup when you click, it's more likeily to have as the timer lowers.
-    var randChance = Math.floor(Math.random() * 1500);
+    /** 
+     * The following two lines make it so there is a chance another mole will
+     * levelup when you click, it's more likeily to have as the timer lowers.
+     */
+
+    let randChance = Math.floor(Math.random() * 1500);
     if (randChance > delay)
     {
       LevelUpEx(spaceNumber);
     }
 
-    // 182 to 190 is the level balance, everytime you click the timer gets shorter, 
-    //the amount taken decreases in till you enter a new level, where it lowers the delay by a large amount but resets the curve, 
-    //to give the player a breather after getting a new level. The game is insanely easy at first but can get really fast near the end. 
+    /** 
+     * 182 to 190 is the level balance, everytime you click the timer gets shorter, 
+     * the amount taken decreases in till you enter a new level, 
+     * where it lowers the delay by a large amount but resets the curve, 
+     * to give the player a breather after getting a new level. 
+     * The game is insanely easy at first but can get really fast near the end. 
+     */
+    
     delay -= Math.floor(curve);
     curve += 1;
     levelTimer = setInterval(LevelUp, delay);
@@ -199,11 +217,12 @@ function Whack(i, j, myId)
   } 
 }
 
-//This is the end game state, this stops the game when the player looses.
+/* This is the end game state, this stops the game when the player looses. */
+
 function EndGame()
 {
   clearInterval(levelTimer);
-  GameOver = 1;
+  gameOver = 1;
 
   gameOverSFX.play();
 
@@ -220,7 +239,8 @@ function EndGame()
   document.getElementById("gameover").innerHTML = "GAMEOVER, refresh the page to play again!";
 }
 
-//This returns a number based on the i and j, basically converting two numbers into 1.
+/* This returns a number based on the i and j, basically converting two numbers into 1. */
+
 function GetSpaceNumber(i, j)
 {
   if (i == 0 && j == 0)
