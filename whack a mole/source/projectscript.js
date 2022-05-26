@@ -1,13 +1,11 @@
 /* Set up for the game. */
 
+let difficulty = 0;
 let gameOver = 0;
-let delay = 1000;
-let spots = [
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 0],
-];
-let currentLevel = 1;
+let delay;
+let levelTimer;
+let spots;
+let currentLevel = 0;
 let currentScore = 0;
 document.getElementById("level").innerHTML = "Level: " + currentLevel;
 document.getElementById("score").innerHTML = "Score: " + currentScore;
@@ -17,7 +15,36 @@ let curve = 1.0;
 let bonkSFX = new Audio('sfx/bonk.wav');
 let gameOverSFX = new Audio('sfx/lose.wav');
 
-let levelTimer = setInterval(LevelUp, delay);
+/* This is what starts the game */
+
+function startGame(num)
+{
+
+  document.getElementById('easy').style.display = "none";
+  document.getElementById('normal').style.display = "none";
+  document.getElementById('hard').style.display = "none";
+
+  document.getElementById("gameover").innerHTML = "";
+
+  spots = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
+  difficulty = num;
+  delay = (1000 / difficulty);
+
+  currentLevel = 1;
+  currentScore = 0;
+  document.getElementById("level").innerHTML = "Level: " + currentLevel;
+  document.getElementById("score").innerHTML = "Score: " + currentScore;
+  gameOver = 0;
+  curve = 1.0;
+
+  levelTimer = setInterval(LevelUp, delay);
+  
+  
+}
 
 /* This progresses one of the moles to the next level */
 
@@ -128,7 +155,6 @@ function Whack(i, j, myId)
   if (gameOver == 0 && spots[i][j] > 0)
   {
 
-
     currentScore += (spots[i][j] * spots[i][j]);
     spots[i][j] = 0;
 
@@ -144,7 +170,7 @@ function Whack(i, j, myId)
      * levelup when you click, it's more likeily to have as the timer lowers.
      */
 
-    let randChance = Math.floor(Math.random() * 1500);
+    let randChance = Math.floor(Math.random() * (1500 / difficulty));
     if (randChance > delay)
     {
       LevelUpEx(spaceNumber);
@@ -159,13 +185,13 @@ function Whack(i, j, myId)
      */
     
     delay -= Math.floor(curve);
-    curve += 1;
+    curve += (1 / difficulty);
     levelTimer = setInterval(LevelUp, delay);
-    if ((1000 - (currentLevel*50)) > delay)
+    if (((1000 / difficulty) - ((currentLevel*50) / difficulty)) > delay)
     {
       currentLevel += 1;
-      delay -= Math.floor(curve) + 10;
-      curve = 1.0;
+      delay -= Math.floor(curve) + (10 / difficulty);
+      curve = (1 /difficulty);
     }
 
     document.getElementById("level").innerHTML = "Level: " + currentLevel;
@@ -173,10 +199,15 @@ function Whack(i, j, myId)
   } 
 }
 
-/* This is the end game state, this stops the game when the player looses. */
+/* This is the end game state, this stops the game when the player loses. */
 
 function EndGame()
 {
+
+  document.getElementById('easy').style.display = "inline";
+  document.getElementById('normal').style.display = "inline";
+  document.getElementById('hard').style.display = "inline";
+
   clearInterval(levelTimer);
   gameOver = 1;
 
@@ -192,5 +223,5 @@ function EndGame()
   
   document.getElementById("level").innerHTML = "Level: " + currentLevel;
   document.getElementById("score").innerHTML = "Score: " + currentScore;
-  document.getElementById("gameover").innerHTML = "GAMEOVER, refresh the page to play again!";
+  document.getElementById("gameover").innerHTML = "GAMEOVER";
 }
