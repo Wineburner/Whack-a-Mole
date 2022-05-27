@@ -39,11 +39,11 @@ function startGame(num)
   document.getElementById("level").innerHTML = "Level: " + currentLevel;
   document.getElementById("score").innerHTML = "Score: " + currentScore;
   gameOver = 0;
-  curve = 1.0;
+  curve = (1.0 / difficulty);
+
+  ChangeBackground(difficulty)
 
   levelTimer = setInterval(LevelUp, delay);
-  
-  
 }
 
 /* This progresses one of the moles to the next level */
@@ -65,7 +65,7 @@ function LevelUp()
     case 9:spots[2][2] += 1;break;
   }
 
-  ChangeSlide()
+  ChangeSlide();
 }
 
 /** 
@@ -96,7 +96,7 @@ function LevelUpEx(num)
     case 9:spots[2][2] += 1;break;
   }
 
-  ChangeSlide()
+  ChangeSlide();
 }
 
 /* This function changes the img displayed on the screen. */
@@ -113,6 +113,7 @@ function ChangeSlide()
       {
         EndGame();
       }
+
       else if (spots[i][j] == 4)
       {
         document.getElementById(myId).src = "img/moleLevel4.png";
@@ -137,15 +138,40 @@ function ChangeSlide()
       {
         document.getElementById(myId).src = "img/moleLevel0.png";
       }
+
       else if (spots[i][j] < 0)
       {
         document.getElementById(myId).src = "img/moleLevel5.png";
       }
-      
+    
+    }
+  }
+}
+
+/* this function changes the color of the img backgrounds based on the difficulty. */
+
+function ChangeBackground(diff)
+{
+  let color = "";
+  let myId = "";
+
+  switch(diff)
+  {
+    case 0:color = "#cccccc";break;
+    case 1:color = "#aaaacc";break;
+    case 2:color = "#aaccaa";break;
+    case 3:color = "#ccaaaa";break;
+  }
+
+  for (let i = 0; i < 3; i++) 
+  {
+    for (let j = 0; j < 3; j++) 
+    { 
+      myId = GetId(i, j);
+      document.getElementById(myId).style.backgroundColor = color;
     }
   }
 
-  
 }
 
 /* This is the click event, this runs everytime you click a mole. */
@@ -155,7 +181,7 @@ function Whack(i, j, myId)
   if (gameOver == 0 && spots[i][j] > 0)
   {
 
-    currentScore += (spots[i][j] * spots[i][j]);
+    currentScore += Math.ceil(((spots[i][j] * spots[i][j]) * (difficulty / 2)));
     spots[i][j] = 0;
 
     bonkSFX.play();
@@ -184,14 +210,14 @@ function Whack(i, j, myId)
      * The game is insanely easy at first but can get really fast near the end. 
      */
     
-    delay -= Math.floor(curve);
+    delay -= Math.ceil(curve);
     curve += (1 / difficulty);
     levelTimer = setInterval(LevelUp, delay);
     if (((1000 / difficulty) - ((currentLevel*50) / difficulty)) > delay)
     {
       currentLevel += 1;
-      delay -= Math.floor(curve) + (10 / difficulty);
-      curve = (1 /difficulty);
+      delay -= Math.ceil(curve) + (10 / difficulty);
+      curve = (1 / difficulty);
     }
 
     document.getElementById("level").innerHTML = "Level: " + currentLevel;
@@ -210,6 +236,8 @@ function EndGame()
 
   clearInterval(levelTimer);
   gameOver = 1;
+
+  ChangeBackground(0);
 
   gameOverSFX.play();
 
