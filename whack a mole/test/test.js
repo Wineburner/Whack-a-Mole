@@ -10,4 +10,3 @@
       assert.equal(GetId(1, 2), "B3");
     });
   });
-  
